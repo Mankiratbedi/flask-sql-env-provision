@@ -1,0 +1,4 @@
+Results written to /app/results.json
+C2 domain: data.c2server.internal
+Exfil queries found: 18
+SHA-256: 31ee0486696ac32e806080927bb482aa71387774200418420a488e0c73c065e2

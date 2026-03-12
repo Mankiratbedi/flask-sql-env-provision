@@ -1,0 +1,6 @@
+error: Failed to fetch: `https://pypi.org/simple/pytest/`
+  Caused by: Request failed after 3 retries
+  Caused by: error sending request for url (https://pypi.org/simple/pytest/)
+  Caused by: client error (Connect)
+  Caused by: dns error
+  Caused by: failed to lookup address information: Temporary failure in name resolution

@@ -1,0 +1,95 @@
+{
+    "id": "b065b4fd-e165-4752-b73f-c5fb0f4ef535",
+    "task_name": "dns-exfil-detect",
+    "trial_name": "dns-exfil-detect__FJKqZfr",
+    "trial_uri": "file:///home/adarsh/ambiguous/terminal-bench-3.0/jobs/2026-03-12__07-28-01/dns-exfil-detect__FJKqZfr",
+    "task_id": {
+        "path": "tasks/dns-exfil-detect"
+    },
+    "source": null,
+    "task_checksum": "1f450a5b186e65956282cd00faaa84246ab9bb3ee2d6b0714bef5156f8588eee",
+    "config": {
+        "task": {
+            "path": "tasks/dns-exfil-detect",
+            "git_url": null,
+            "git_commit_id": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "dns-exfil-detect__FJKqZfr",
+        "trials_dir": "jobs/2026-03-12__07-28-01",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "oracle",
+            "import_path": null,
+            "model_name": null,
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "b0f60598-2520-47b3-804d-30af70130adb"
+    },
+    "agent_info": {
+        "name": "oracle",
+        "version": "1.0.0",
+        "model_info": null
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": null,
+    "exception_info": {
+        "exception_type": "RewardFileNotFoundError",
+        "exception_message": "No reward file found at jobs/2026-03-12__07-28-01/dns-exfil-detect__FJKqZfr/verifier/reward.txt or jobs/2026-03-12__07-28-01/dns-exfil-detect__FJKqZfr/verifier/reward.json",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/harbor/trial/trial.py\", line 503, in run\n    await self._run_verification()\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/harbor/trial/trial.py\", line 280, in _run_verification\n    await self._verify_with_retry()\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/tenacity/asyncio/__init__.py\", line 193, in async_wrapped\n    return await copy(fn, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/tenacity/asyncio/__init__.py\", line 112, in __call__\n    do = await self.iter(retry_state=retry_state)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/tenacity/asyncio/__init__.py\", line 157, in iter\n    result = await action(retry_state)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/tenacity/_utils.py\", line 111, in inner\n    return call(*args, **kwargs)\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/tenacity/__init__.py\", line 393, in <lambda>\n    self._add_action_func(lambda rs: rs.outcome.result())\n                                     ~~~~~~~~~~~~~~~~~^^\n  File \"/home/adarsh/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py\", line 449, in result\n    return self.__get_result()\n           ~~~~~~~~~~~~~~~~~^^\n  File \"/home/adarsh/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/tenacity/asyncio/__init__.py\", line 116, in __call__\n    result = await fn(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/harbor/trial/trial.py\", line 298, in _verify_with_retry\n    self.result.verifier_result = await asyncio.wait_for(\n                                  ^^^^^^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n    )\n    ^\n  File \"/home/adarsh/.local/share/uv/python/cpython-3.13.9-linux-x86_64-gnu/lib/python3.13/asyncio/tasks.py\", line 507, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/home/adarsh/.local/share/uv/tools/harbor/lib/python3.13/site-packages/harbor/verifier/verifier.py\", line 144, in verify\n    raise RewardFileNotFoundError(\n    ...<3 lines>...\n    )\nharbor.verifier.verifier.RewardFileNotFoundError: No reward file found at jobs/2026-03-12__07-28-01/dns-exfil-detect__FJKqZfr/verifier/reward.txt or jobs/2026-03-12__07-28-01/dns-exfil-detect__FJKqZfr/verifier/reward.json\n",
+        "occurred_at": "2026-03-12T07:28:44.041984"
+    },
+    "started_at": "2026-03-12T01:58:01.309120Z",
+    "finished_at": "2026-03-12T01:58:55.916009Z",
+    "environment_setup": {
+        "started_at": "2026-03-12T01:58:01.858033Z",
+        "finished_at": "2026-03-12T01:58:36.795168Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-03-12T01:58:36.795238Z",
+        "finished_at": "2026-03-12T01:58:36.795393Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-03-12T01:58:36.795477Z",
+        "finished_at": "2026-03-12T01:58:38.164786Z"
+    },
+    "verifier": {
+        "started_at": "2026-03-12T01:58:38.165430Z",
+        "finished_at": "2026-03-12T01:58:44.030742Z"
+    }
+}

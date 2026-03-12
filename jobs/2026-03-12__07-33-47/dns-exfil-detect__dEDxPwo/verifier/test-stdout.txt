@@ -1,0 +1,136 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.12, pytest-8.4.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collected 10 items
+
+../tests/test_outputs.py FFFFFFFFFF                                      [100%]
+
+=================================== FAILURES ===================================
+__________________ TestDnsExfilDetect.test_output_file_exists __________________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c9e2e90>
+
+    def test_output_file_exists(self):
+        """Verify the agent created the required output file at /app/results.json."""
+>       assert os.path.exists(RESULTS_PATH), (
+            f"Output file {RESULTS_PATH} not found"
+        )
+E       AssertionError: Output file /app/results.json not found
+E       assert False
+E        +  where False = <function exists at 0x797c2d706980>('/app/results.json')
+E        +    where <function exists at 0x797c2d706980> = <module 'posixpath' (frozen)>.exists
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_outputs.py:25: AssertionError
+_________________ TestDnsExfilDetect.test_output_is_valid_json _________________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c9e3250>
+
+    def test_output_is_valid_json(self):
+        """Verify the output file contains valid JSON."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:31: FileNotFoundError
+___________ TestDnsExfilDetect.test_output_schema_has_required_keys ____________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c823100>
+
+    def test_output_schema_has_required_keys(self):
+        """Verify the output JSON contains all four required keys."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:37: FileNotFoundError
+__________________ TestDnsExfilDetect.test_c2_domain_correct ___________________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c823360>
+
+    def test_c2_domain_correct(self):
+        """Verify the agent correctly identified the C2 domain used for exfiltration."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:45: FileNotFoundError
+______________ TestDnsExfilDetect.test_num_exfil_queries_correct _______________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c7cd5b0>
+
+    def test_num_exfil_queries_correct(self):
+        """Verify the agent found the correct number of exfiltration queries."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:54: FileNotFoundError
+_________________ TestDnsExfilDetect.test_sha256_hash_correct __________________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c837680>
+
+    def test_sha256_hash_correct(self):
+        """Verify the SHA-256 hash of the decoded content matches the expected value."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:63: FileNotFoundError
+__________ TestDnsExfilDetect.test_decoded_content_sha256_consistency __________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c8379b0>
+
+    def test_decoded_content_sha256_consistency(self):
+        """Verify that the sha256 field is consistent with the decoded_content field."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:72: FileNotFoundError
+________ TestDnsExfilDetect.test_decoded_content_contains_expected_data ________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c7d8d50>
+
+    def test_decoded_content_contains_expected_data(self):
+        """Verify the decoded content contains the expected confidential data snippet."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:84: FileNotFoundError
+______________ TestDnsExfilDetect.test_decoded_content_not_empty _______________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c7d8f50>
+
+    def test_decoded_content_not_empty(self):
+        """Verify the decoded content is a non-empty string."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:93: FileNotFoundError
+_____________ TestDnsExfilDetect.test_num_exfil_queries_is_integer _____________
+
+self = <test_outputs.TestDnsExfilDetect object at 0x797c2c83ab70>
+
+    def test_num_exfil_queries_is_integer(self):
+        """Verify num_exfil_queries is an integer."""
+>       with open(RESULTS_PATH) as f:
+             ^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/results.json'
+
+/tests/test_outputs.py:104: FileNotFoundError
+=========================== short test summary info ============================
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_output_file_exists
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_output_is_valid_json
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_output_schema_has_required_keys
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_c2_domain_correct
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_num_exfil_queries_correct
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_sha256_hash_correct
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_decoded_content_sha256_consistency
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_decoded_content_contains_expected_data
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_decoded_content_not_empty
+FAILED ../tests/test_outputs.py::TestDnsExfilDetect::test_num_exfil_queries_is_integer
+============================== 10 failed in 0.28s ==============================

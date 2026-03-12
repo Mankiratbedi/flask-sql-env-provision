@@ -1,0 +1,29 @@
+{
+    "id": "a5f673d4-b189-4540-8f0c-f0e7efe4b5b6",
+    "started_at": "2026-03-12T07:35:14.716273",
+    "finished_at": "2026-03-12T07:35:44.860000",
+    "n_total_trials": 1,
+    "stats": {
+        "n_trials": 1,
+        "n_errors": 0,
+        "evals": {
+            "oracle__adhoc": {
+                "n_trials": 1,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "mean": 1.0
+                    }
+                ],
+                "reward_stats": {
+                    "reward": {
+                        "1.0": [
+                            "dns-exfil-detect__CAHXw28"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        }
+    }
+}
