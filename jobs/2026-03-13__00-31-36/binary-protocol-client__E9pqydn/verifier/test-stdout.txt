@@ -1,0 +1,91 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.12, pytest-8.4.1, pluggy-1.6.0
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collected 6 items
+
+../tests/test_outputs.py FFFFFF                                          [100%]
+
+=================================== FAILURES ===================================
+_____________ TestTaskRequirements.test_run_client_produces_output _____________
+
+self = <test_outputs.TestTaskRequirements object at 0x750efac9ed50>
+
+    def test_run_client_produces_output(self):
+        """Run the agent's client once; server is already started by test.sh."""
+>       assert os.path.exists(CLIENT_PATH), f"Client not found at {CLIENT_PATH}"
+E       AssertionError: Client not found at /app/client.py
+E       assert False
+E        +  where False = <function exists at 0x750efb9ca980>('/app/client.py')
+E        +    where <function exists at 0x750efb9ca980> = <module 'posixpath' (frozen)>.exists
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_outputs.py:22: AssertionError
+_________________ TestTaskRequirements.test_output_file_exists _________________
+
+self = <test_outputs.TestTaskRequirements object at 0x750efac9f610>
+
+    def test_output_file_exists(self):
+        """Verify the agent created the required output file at /app/result.json."""
+>       assert os.path.exists(RESULT_PATH), (
+            f"Output file {RESULT_PATH} not found"
+        )
+E       AssertionError: Output file /app/result.json not found
+E       assert False
+E        +  where False = <function exists at 0x750efb9ca980>('/app/result.json')
+E        +    where <function exists at 0x750efb9ca980> = <module 'posixpath' (frozen)>.exists
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_outputs.py:32: AssertionError
+________________ TestTaskRequirements.test_output_is_valid_json ________________
+
+self = <test_outputs.TestTaskRequirements object at 0x750efaa9c770>
+
+    def test_output_is_valid_json(self):
+        """Verify the output file contains valid JSON."""
+>       with open(RESULT_PATH) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/result.json'
+
+/tests/test_outputs.py:38: FileNotFoundError
+____________ TestTaskRequirements.test_output_schema_has_value_key _____________
+
+self = <test_outputs.TestTaskRequirements object at 0x750efaa9c9d0>
+
+    def test_output_schema_has_value_key(self):
+        """Verify the output JSON has the required 'value' key per instruction."""
+>       with open(RESULT_PATH) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/result.json'
+
+/tests/test_outputs.py:44: FileNotFoundError
+__________________ TestTaskRequirements.test_value_is_string ___________________
+
+self = <test_outputs.TestTaskRequirements object at 0x750efaaf5490>
+
+    def test_value_is_string(self):
+        """Verify the 'value' field is a string per schema."""
+>       with open(RESULT_PATH) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/result.json'
+
+/tests/test_outputs.py:50: FileNotFoundError
+______________ TestTaskRequirements.test_value_matches_get_result ______________
+
+self = <test_outputs.TestTaskRequirements object at 0x750efa9b05a0>
+
+    def test_value_matches_get_result(self):
+        """Verify the value is the string returned by GET 'answer' (must be '42')."""
+>       with open(RESULT_PATH) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/app/result.json'
+
+/tests/test_outputs.py:58: FileNotFoundError
+=========================== short test summary info ============================
+FAILED ../tests/test_outputs.py::TestTaskRequirements::test_run_client_produces_output
+FAILED ../tests/test_outputs.py::TestTaskRequirements::test_output_file_exists
+FAILED ../tests/test_outputs.py::TestTaskRequirements::test_output_is_valid_json
+FAILED ../tests/test_outputs.py::TestTaskRequirements::test_output_schema_has_value_key
+FAILED ../tests/test_outputs.py::TestTaskRequirements::test_value_is_string
+FAILED ../tests/test_outputs.py::TestTaskRequirements::test_value_matches_get_result
+============================== 6 failed in 0.68s ===============================

@@ -1,0 +1,74 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 6,
+            "passed": 6,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1773341852.714711,
+            "stop": 1773341853.434328
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::TestTaskRequirements::test_run_client_produces_output",
+                "status": "passed",
+                "duration": 0.22080660399979024,
+                "start": 1773341853.1773384,
+                "stop": 1773341853.3994606,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestTaskRequirements::test_output_file_exists",
+                "status": "passed",
+                "duration": 0.003259318000118583,
+                "start": 1773341853.4012167,
+                "stop": 1773341853.406022,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestTaskRequirements::test_output_is_valid_json",
+                "status": "passed",
+                "duration": 0.004143618999933096,
+                "start": 1773341853.408223,
+                "stop": 1773341853.413299,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestTaskRequirements::test_output_schema_has_value_key",
+                "status": "passed",
+                "duration": 0.004433800999777304,
+                "start": 1773341853.4143634,
+                "stop": 1773341853.4196413,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestTaskRequirements::test_value_is_string",
+                "status": "passed",
+                "duration": 0.005189444999814441,
+                "start": 1773341853.420822,
+                "stop": 1773341853.427105,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestTaskRequirements::test_value_matches_get_result",
+                "status": "passed",
+                "duration": 0.0035662470002080227,
+                "start": 1773341853.4290597,
+                "stop": 1773341853.4334202,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

@@ -1,0 +1,94 @@
+{
+    "id": "77a42fff-1f9b-4e35-939f-1283e6fdc231",
+    "task_name": "binary-protocol-client",
+    "trial_name": "binary-protocol-client__E9pqydn",
+    "trial_uri": "file:///home/adarsh/ambiguous/Project-Terminus/jobs/2026-03-13__00-31-36/binary-protocol-client__E9pqydn",
+    "task_id": {
+        "path": "tasks/binary-protocol-client"
+    },
+    "source": null,
+    "task_checksum": "61cc2e9ea90cac9e6fcb9ac0f1e04aae1f66cc0a228b6f4763887bd50ceb2bb1",
+    "config": {
+        "task": {
+            "path": "tasks/binary-protocol-client",
+            "git_url": null,
+            "git_commit_id": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "binary-protocol-client__E9pqydn",
+        "trials_dir": "jobs/2026-03-13__00-31-36",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "nop",
+            "import_path": null,
+            "model_name": null,
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "kwargs": {},
+            "env": {}
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "suppress_override_warnings": false,
+            "kwargs": {}
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "job_id": "c599901d-5c26-40ab-aa33-031b63dc8bf0"
+    },
+    "agent_info": {
+        "name": "nop",
+        "version": "1.0.0",
+        "model_info": null
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-03-12T19:01:36.318130Z",
+    "finished_at": "2026-03-12T19:02:05.953928Z",
+    "environment_setup": {
+        "started_at": "2026-03-12T19:01:37.120970Z",
+        "finished_at": "2026-03-12T19:01:46.563854Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-03-12T19:01:46.563941Z",
+        "finished_at": "2026-03-12T19:01:46.564094Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-03-12T19:01:46.564193Z",
+        "finished_at": "2026-03-12T19:01:46.564333Z"
+    },
+    "verifier": {
+        "started_at": "2026-03-12T19:01:46.564650Z",
+        "finished_at": "2026-03-12T19:01:53.142196Z"
+    }
+}
