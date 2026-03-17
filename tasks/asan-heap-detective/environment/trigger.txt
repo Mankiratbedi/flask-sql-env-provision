@@ -1,0 +1,6 @@
+SET alice 100
+SET bob 200
+GET alice
+DELETE alice
+GET alice
+GET bob

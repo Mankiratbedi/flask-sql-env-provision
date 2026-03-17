@@ -2,12 +2,6 @@
 export PATH="/usr/local/bin:$HOME/.local/bin:$PATH"
 
 # Install uv if not already available
-if ! command -v uvx &> /dev/null; then
-    apt-get update
-    apt-get install -y curl
-    curl -LsSf https://astral.sh/uv/0.9.5/install.sh | sh
-    source $HOME/.local/bin/env 2>/dev/null || true
-fi
 
 uvx \
   -p 3.13 \

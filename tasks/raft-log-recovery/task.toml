@@ -1,0 +1,25 @@
+# CANARY-0xF5A6B7C8-raft-log-recovery
+version = "1.0"
+
+[metadata]
+author_name = "AmbiguityLabs"
+author_email = "hello@ambiguitylabs.in"
+difficulty = "hard"
+category = "distributed-systems"
+tags = ["raft", "consensus", "log-recovery", "distributed", "debugging"]
+expert_time_estimate_min = 45.0
+junior_time_estimate_min = 120.0
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = false

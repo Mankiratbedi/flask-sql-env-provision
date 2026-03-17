@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(echo \"=== $task ===\")",
+      "Read(//home/adarsh/ambiguous/Project-Terminus/tasks/**)",
+      "Read(//home/adarsh/ambiguous/Project-Terminus/**)",
+      "Bash(make pathcheck:*)",
+      "Bash(head -10 grep -n \"importlib\\\\b\" /home/adarsh/ambiguous/Project-Terminus/tasks/async-deadlock-hunt/tests/test_outputs.py grep -n \"^import re\\\\b\\\\|re\\\\.\" /home/adarsh/ambiguous/Project-Terminus/tasks/sqlite-query-speedup/environment/benchmark.py grep -n \"^import os\\\\b\\\\|os\\\\.\" /home/adarsh/ambiguous/Project-Terminus/tasks/sqlite-query-speedup/environment/setup_db.py)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/async-deadlock-hunt/solution/solve.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/async-deadlock-hunt/tests/test.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/fuzzy-dedup-pipeline/solution/solve.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/fuzzy-dedup-pipeline/tests/test.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/sqlite-query-speedup/solution/solve.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/sqlite-query-speedup/tests/test.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/shell-pipeline-fix/solution/solve.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/shell-pipeline-fix/tests/test.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/onnx-inference-optimize/solution/solve.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/onnx-inference-optimize/tests/test.sh)",
+      "Bash(chmod +x /home/adarsh/ambiguous/Project-Terminus/tasks/shell-pipeline-fix/environment/analyze_logs.sh)",
+      "Bash(grep -rn \"astral.sh/uv\\\\|install uv\\\\|curl.*uv\" /home/adarsh/ambiguous/Project-Terminus/tasks/*/environment/Dockerfile)",
+      "Bash(grep -rn \"astral.sh/uv\\\\|curl.*uv\" /home/adarsh/ambiguous/Project-Terminus/tasks/*/tests/test.sh)",
+      "Bash(echo \"=== $task/Dockerfile ===\")",
+      "Read(//home/adarsh/ambiguous/Project-Terminus/tasks/$task/environment/**)",
+      "Bash(f=\"/home/adarsh/ambiguous/Project-Terminus/tasks/$task/tests/test.sh\")",
+      "Bash(python3 -:*)",
+      "Bash(make oracle:*)"
+    ]
+  }
+}
