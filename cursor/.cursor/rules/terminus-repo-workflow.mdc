@@ -1,0 +1,39 @@
+---
+description: This repo — where to create Terminus tasks, how to zip for submit, and difficulty floor (medium/hard)
+alwaysApply: true
+---
+
+# Terminus Edition 2 — This repository (locked workflow)
+
+Canonical Terminus rules still apply from `terminus-index.mdc` and the split `terminus-*.mdc` files. **Additionally**, for every new or revised task in **this** workspace:
+
+## Location
+
+- Create and maintain tasks under **`tasks/<task-name>/`** (non-milestone layout: `instruction.md`, `task.toml`, `environment/`, `tests/`, `solution/` at that folder root — never only in `tasksubmit/` without the live tree under `tasks/`).
+
+## Submission zip
+
+- After the task is ready to ship, build a **flat-root** zip so `task.toml` and `tests/test.sh` sit at the **archive root** (CodeBuild copies `$CODEBUILD_SRC_DIR/*` into `~/tasks/tbench-task/` and expects those paths at the task root).
+- Command pattern:
+
+```bash
+cd "tasks/<task-name>" && zip -r "../../tasksubmit/<task-name>.zip" . \
+  -x "environment/target/*" -x "**/__pycache__/*" -x "**/*.pyc" -x "**/.pytest_cache/*"
+```
+
+- Keep a copy (or symlink workflow) under **`tasksubmit/`** at repo root for upload pipelines.
+- Also keep **`tasks/<task-name>.zip`** in sync if your team uses that path; **`tasksubmit/`** is the canonical submit drop for this repo.
+
+## Difficulty
+
+- Set **`difficulty = "medium"`** or **`"hard"`** in `task.toml` only. Do **not** create new submissions as **`easy`** or trivial one-fix tasks unless the user explicitly overrides.
+- If no agent accuracy data exists yet, label difficulty as **target** in prose; do not claim “confirmed hard” without platform results.
+
+## Non-negotiables (same as Terminus runtime rules)
+
+- `[environment] allow_internet = false` in `task.toml`.
+- **No** networked installs or downloads in `tests/test.sh` (no `pip install`, `curl`, `npm install` from registry, `uv`/`uvx` web pulls, `apt-get`, Playwright web install, etc.). Runtime is offline.
+- Test-only deps (pytest, pytest-json-ctrf, numpy, …) are built into an **isolated `/opt/verifier-venv`** at image time — **not** the system Python (`--break-system-packages` fails `test_deps_in_image`) and **not** wheels in `tests/` (a blocker). `tests/` holds **only** test scripts.
+- `tests/test.sh`: use `set -uo pipefail`, create `/logs/verifier`, run `/opt/verifier-venv/bin/python -m pytest` (venv built at image time — no `pip install`, no venv at test time), and **end the file** with the literal reward block the static checker enforces — `if [ $? -eq 0 ]; then` / 4-space `echo 1 > /logs/verifier/reward.txt` / `else` / 4-space `echo 0 > ...` / `fi` — with pytest as the line right before it. **No** `RC=$?`, **no** `exit "$RC"` after `fi` (the static checker rejects those: `❌ Must end with the reward section`).
+
+When in doubt, prefer **stricter** interpretation vs other docs.

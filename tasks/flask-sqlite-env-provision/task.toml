@@ -1,0 +1,49 @@
+version = "2.0"
+
+[metadata]
+author_name = "Anonymous"
+author_email = "Anonymous"
+category = "software-engineering"
+subcategories = ["api_integration", "db_interaction"]
+difficulty = "medium"
+codebase_size = "small"
+number_of_milestones = 3
+languages = ["python"]
+tags = ["flask", "sqlite", "provisioning", "cli"]
+expert_time_estimate_min = 45.0
+junior_time_estimate_min = 120.0
+
+[environment]
+allow_internet = false
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+workdir = "/app"
+
+[[steps]]
+name = "milestone_1"
+
+[steps.agent]
+timeout_sec = 1800.0
+
+[steps.verifier]
+timeout_sec = 300.0
+
+[[steps]]
+name = "milestone_2"
+
+[steps.agent]
+timeout_sec = 1800.0
+
+[steps.verifier]
+timeout_sec = 300.0
+
+[[steps]]
+name = "milestone_3"
+
+[steps.agent]
+timeout_sec = 1800.0
+
+[steps.verifier]
+timeout_sec = 300.0

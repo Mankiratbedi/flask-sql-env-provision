@@ -1,0 +1,3 @@
+# Flask service configuration template
+SECRET_KEY = "{{SECRET_KEY}}"
+DATABASE = "{{DATABASE}}"

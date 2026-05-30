@@ -1,0 +1,143 @@
+---
+description: Terminus Edition 2 runtime internet block, verifier deps installed in Dockerfile, test.sh constraints
+alwaysApply: true
+---
+
+# Terminus Edition 2 — Runtime Internet and Verifier Rules
+
+## task.toml (mandatory)
+
+Every `task.toml` must include under `[environment]`:
+
+- `build_timeout_sec`, `cpus`, `memory_mb`, `storage_mb`, **`allow_internet = false`**
+- **`workdir` is milestone-only.** Do **not** set `workdir` on flat (non-milestone) tasks — its presence on a flat task is a cleanup-issue rejection (per 2026-05-27 trial feedback). This reverses the earlier rule that required `workdir = "/app"` on flat tasks.
+
+Example (flat task):
+
+```toml
+[environment]
+allow_internet = false
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+```
+
+Runtime internet is blocked. The verifier must not download dependencies from the network while running.
+
+## Test-only dependencies: isolated venv (not system Python)
+
+**Test-only packages (pytest, pytest-json-ctrf, numpy, Playwright, Vitest, etc.) are built into an isolated venv at `/opt/verifier-venv`** at image-build time — **not** the system/app Python. Installing them into the base interpreter (e.g. `pip install --break-system-packages`) **fails** the `test_deps_in_image` check, even with an offline justification. The venv keeps them isolated to the test runner while the running container needs no network.
+
+The `tests/` directory holds **only** test scripts (`test.sh`, `test_*.py`, optional `verifier-tools/`). **No `wheels/` directory, no `.whl` files, no `pip install` or venv creation inside `test.sh`.** Shipping wheels under `tests/` is a **blocker**.
+
+Dockerfile (reference) — needs `python3-venv` in the apt layer:
+
+```dockerfile
+# Test-only deps in an isolated venv, kept out of the app/system Python.
+RUN python3 -m venv /opt/verifier-venv \
+ && /opt/verifier-venv/bin/pip install --no-cache-dir pytest==8.4.1 pytest-json-ctrf==0.3.5
+```
+
+`test.sh` runs pytest from the isolated verifier venv (reference):
+
+```bash
+#!/bin/bash
+# Runs the tests from the isolated verifier venv (/opt/verifier-venv). Runtime is offline.
+set -uo pipefail
+mkdir -p /logs/verifier
+
+if [ "$PWD" = "/" ]; then
+    echo "Error: No working directory set. Please set a WORKDIR in your Dockerfile."
+    echo 0 > /logs/verifier/reward.txt
+    exit 1
+fi
+/opt/verifier-venv/bin/python -m pytest -o cache_dir=/tmp/pytest_cache \
+  --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA
+if [ $? -eq 0 ]; then
+    echo 1 > /logs/verifier/reward.txt
+else
+    echo 0 > /logs/verifier/reward.txt
+fi
+```
+
+The file must **end** with that `if [ $? -eq 0 ]` block (bare `$?`, 4-space
+indent, nothing after `fi`). The submission static checker enforces this literal
+tail and rejects the `RC=$?` / `exit "$RC"` variant (`❌ Must end with the reward
+section`).
+
+The Docker **build** may reach the network; the **runtime** stays offline.
+
+**App-runtime dependencies are different.** Anything the agent's app itself needs to run (the Python/Node/Rust libs the codebase imports, system packages, the language toolchain) belongs in the **normal** image build, pinned — only *test-only* deps need the venv isolation.
+
+## tests/test.sh must
+
+- Never reach the network. No `pip install`, `curl`, `wget`, `apt-get install`, `uv` web pulls, `uvx` package downloads, `npm install` from registry, `npx playwright install`, or any external dependency download.
+- Run `/opt/verifier-venv/bin/python -m pytest` (the venv is built at image time) — **no `pip install`, no venv creation at test time**.
+- Use only the language runtimes/packages already in `environment/Dockerfile`.
+- Always write `0` or `1` to `/logs/verifier/reward.txt`.
+- Write `0` on failure and `1` only when all tests pass.
+- Use the same verifier logic for oracle and agent.
+- Never use partial rewards.
+- Never exit before writing `/logs/verifier/reward.txt`.
+
+## tests/test.sh may
+
+- Create `/logs/verifier`
+- Copy tests to `/tmp` or use `TEST_DIR="${TEST_DIR:-/tests}"`
+- Write `/logs/verifier/ctrf.json`
+- Run `/opt/verifier-venv/bin/python -m pytest` (the venv built at image time)
+
+## environment/Dockerfile must
+
+- Build an isolated `/opt/verifier-venv` (`python3 -m venv` + venv pip) with pytest, pytest-json-ctrf, and any other test-only deps, pinned. Do **not** install them into the system Python.
+- Install everything the agent's app itself requires (pinned), plus the language runtime.
+- Keep `tmux` and `asciinema` (required by the harness).
+- Not copy `tests/` or `solution/` into the image (the verifier mounts them at runtime).
+
+## Comments
+
+- Do **not** add a verifier-deps comment to `task.toml` — reviewers cite a "deps installed in environment/Dockerfile" line as evidence of a `test_deps_in_image` violation.
+- A short 1–2 line `tests/test.sh` header is fine. Do **not** reference internal rule filenames in committed task files.
+
+Example `tests/test.sh` header (right after the shebang):
+
+```bash
+# Runs the tests from the isolated verifier venv (/opt/verifier-venv). Runtime is
+# offline; this script installs nothing and reaches no network.
+```
+
+## Supersedes deprecated guidance
+
+**Do not use or approve** any of these old patterns:
+
+> Old (deprecated): `tests/test.sh` runs `pip install pytest pytest-json-ctrf` from PyPI at runtime.
+
+> Old (deprecated): `.whl` files or a `wheels/` directory under `tests/` (or `steps/*/tests/`).
+
+> Old (deprecated): a venv created at *runtime* inside `test.sh` (build `/opt/verifier-venv` at *image* time instead).
+
+> Old (deprecated): test-only deps installed into the image's **system** Python (incl. `pip install --break-system-packages`).
+
+The current rule is **a `/opt/verifier-venv` built at image time** (isolated from the system/app Python — passes `test_deps_in_image`) + `test.sh` running `/opt/verifier-venv/bin/python -m pytest`. App-runtime deps still go in the normal image build.
+
+Treat all of these as **blockers** when found in new tasks.
+
+## Cursor verification checklist (runtime)
+
+Before saying verifier setup is okay, confirm **all four**:
+
+1. `task.toml` has `[environment] allow_internet = false`, and **no `workdir` on flat tasks**.
+2. `environment/Dockerfile` builds `/opt/verifier-venv` with the test deps (system Python stays clean; `python3-venv` in apt).
+3. `tests/` has **no** `wheels/` dir and **no** `.whl` files.
+4. `tests/test.sh` runs `/opt/verifier-venv/bin/python -m pytest` — no `pip install`, no venv creation, no network call.
+
+Treat any of these as **blockers**:
+
+- `pip install` in `test.sh` (runtime is offline; install at build time instead)
+- `curl`, `wget`, `apt-get install`, `uv install`, `uvx` package downloads, `npm install`, `playwright install` in `test.sh`
+- `.whl` files or a `wheels/` directory under `tests/`
+- a venv created at *runtime* inside `test.sh` (build `/opt/verifier-venv` at *image* time instead)
+- test-only deps installed into the image's **system** Python (`--break-system-packages`)
+
+Do not mark tasks ready without reading actual `task.toml`, `tests/test.sh`, and `environment/Dockerfile`.

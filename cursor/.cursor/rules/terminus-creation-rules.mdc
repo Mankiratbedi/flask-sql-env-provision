@@ -1,0 +1,275 @@
+---
+description: Terminus Edition 2 task structure, instruction, environment, tests, oracle, rubric, rejections
+alwaysApply: true
+---
+
+# Terminus Edition 2 — Task Creation Rules
+
+## Non-milestone structure
+
+Create exactly this root-level structure:
+
+```
+task/
+  instruction.md
+  task.toml
+  environment/
+    Dockerfile
+    ...
+  solution/
+    solve.sh
+  tests/
+    test.sh
+    test_outputs.py
+```
+
+- Do not put tests or solution files inside `environment/`.
+- Do not copy tests or solution into the Docker image.
+
+### task.toml (non-milestone)
+
+Must include:
+
+- `version = "2.0"`
+- `[metadata]`: author_name, author_email, category, subcategories, difficulty, codebase_size, number_of_milestones = 0, languages, tags, expert_time_estimate_min, junior_time_estimate_min
+- `[agent]` timeout_sec
+- `[verifier]` timeout_sec
+- `[environment]`: build_timeout_sec, cpus, memory_mb, storage_mb, allow_internet = false (no `workdir` on flat tasks — it is a milestone-only field)
+
+## Milestone structure
+
+Never create root-level `instruction.md`, `tests/`, `solution/`, `milestones.md`, `milestone_1.md`, or root `solveN.sh`/`test_mN.py`.
+
+Use only:
+
+```
+task/
+  task.toml
+  environment/
+    Dockerfile
+    ...
+  steps/
+    milestone_1/
+      instruction.md
+      tests/
+        test.sh
+        test_m1.py
+      solution/
+        solve.sh
+        solve1.sh
+    milestone_2/
+      ...
+```
+
+Each milestone must:
+
+- Have its own `instruction.md` covering only that milestone.
+- Have `tests/test_mN.py` with class `TestMilestoneN`.
+- Have `tests/test.sh` that writes `/logs/verifier/reward.txt`.
+- Have `solution/solve.sh` as thin wrapper calling `solveN.sh`.
+- Have `solution/solveN.sh` scoped only to that milestone.
+- Depend on previous milestone state without revealing future requirements.
+
+### task.toml (milestone)
+
+- Set `number_of_milestones` to exact count of milestone folders.
+- One `[[steps]]` block per milestone with `name = "milestone_1"`, etc.
+- Include `[steps.agent]` timeout_sec and `[steps.verifier]` timeout_sec for every step.
+- Include global `[environment]`: build_timeout_sec, cpus, memory_mb, storage_mb, workdir = "/app", allow_internet = false.
+- Do not include root `[agent]` or `[verifier]` blocks.
+
+## Instruction rules
+
+Write `instruction.md` like a real user asking a coding agent for help. Keep concise (usually 1–3 short paragraphs). Explain what needs to work, not how to solve it.
+
+### Six instruction principles
+
+1. **Concise.** One sentence to three short paragraphs (≈150–200 words). No long-running prompts that look like requirement checklists. The challenge should be in the coding problem, not in instruction-following.
+2. **Well specified.** The goal must be clear and obvious to a human or agent. If the only thing making the task hard is a long edge-case list inside the instruction, the task is rejected. Edge cases live in the linked contract/docs, not in the prompt.
+3. **Interesting.** The problem should be one a real developer would find useful or relevant. Obscure or contrived problems are rejected.
+4. **No answers, no hints.** Instruction is the one-shot user prompt. Do not include stepwise guidance, rubrics, file-location hints, exit-code enumerations, or solution recipes. Requirements are fine; how-to-solve is not.
+5. **Unique.** Initial state, instructions, **or** expected output must be non-trivially different from any existing Terminal-Bench 2/3 or Project Terminus Edition 1 task. Similarity-search results are the source of truth here.
+6. **Absolute paths and no canary string.** Every file or directory mentioned uses an absolute path. The instruction must not include the task name, a `CANARY-*` marker, or any other canary string.
+
+### Operational must / avoid
+
+Instruction must:
+
+- Use **absolute paths** for every file or directory mentioned.
+- Specify required output files and schemas when tests will check them — usually by **linking** to a doc under `/app/docs/`, not by inlining the spec.
+- Mention every behavior tests verify, either explicitly or as clearly implied behavior, or by referencing the contract doc that does.
+- Be interesting and realistic for a developer.
+
+Avoid:
+
+- Excessive markdown, long bullet lists, emojis, "expert programmer" framing, or LLM-style phrasing.
+- Step-by-step solution guidance.
+- Hints like "look in this file for the bug" unless file location is necessary user context.
+- Exact algorithmic solution details unless they are part of the product contract.
+- Task name and canary strings.
+- Tool requirements that cannot be verified (e.g. "use vim").
+- Enumerating exit codes, mode bits, JSON keys, or other rubric-like checklists inline — point to the contract doc instead.
+
+### Human-centric vs. synthetic styling
+
+| Axis | Synthetic (reject) | Human-centric (accept) |
+|---|---|---|
+| Tone | "You are an expert programmer. Your goal is to..." | "We need to migrate the existing SQLite schema to..." |
+| Length | 500+ words of redundant context. | 150–200 words of actionable info. |
+| Guidance | "First, use `ls` to see files, then..." | "The source data is in `/data`. Write the result to `/out/...`." |
+
+**Bad:** "First inspect `/app/src/parser.ts`, then change the checksum function..."
+
+**Good:** "The import service under `/app` is producing inconsistent reconciliation reports for replayed order batches. Fix the service so it handles restarts, duplicate events, and malformed records correctly, then write the normalized report to `/app/output/reconciliation-report.json` using the schema described in `/app/docs/report-format.md`."
+
+## Environment and Docker rules
+
+See **`terminus.mdc` → Dockerfile and image best practices** (canonical) and **`terminus-dockerfile.mdc`** (extended Snorkel spec).
+
+- Keep all agent-visible project files under `environment/`. Dockerfile at `environment/Dockerfile`.
+- Use a **specific base image tag**, never `latest`.
+- Pin application dependencies exactly (pip, npm, cargo, gem, etc.).
+- Do not copy `solution/` or `tests/` into the image.
+- Do not create or modify `/tests`, `/solution`, `/oracle`, `/logs/verifier`, or `/logs/artifacts`.
+- No privileged containers, docker socket, SYS_ADMIN, NET_ADMIN, or similar.
+- No fetching task data from the web at runtime.
+- Keep images lightweight.
+- Avoid AI-specific filenames (CLAUDE.md, skills.md).
+- Environment docs allowed but must not contain solution hints, walkthroughs, or answer-revealing TODOs.
+- Small/minimal codebases should usually not include license files.
+
+### Dockerfile must
+
+- Use specific base image tag, not latest.
+- Install all **app** dependencies with exact pins (the libs/binaries the agent's code uses).
+- Install the **language runtime** in the normal image build; build **test-only packages** (pytest, pytest-json-ctrf, numpy, Playwright, Vitest, etc.) into an **isolated venv at `/opt/verifier-venv`** (`RUN python3 -m venv /opt/verifier-venv && /opt/verifier-venv/bin/pip install --no-cache-dir pytest==8.4.1 pytest-json-ctrf==0.3.5`; `python3-venv` in apt). Test deps must **not** go in the system Python (`--break-system-packages` fails `test_deps_in_image`) and **not** as `.whl`/`wheels/` under `tests/` (a blocker).
+- Not copy solution/ or tests/ into image paths for oracle/agent cheating.
+- Avoid privileged settings and runtime web/data downloads.
+
+## Test rules
+
+Tests must verify behavior and correctness, not just file existence or formatting.
+
+Every test file must:
+
+- Have useful module-level or test-level docstrings.
+- Map directly to instruction requirements.
+- Avoid testing hidden requirements not in instruction.
+- Avoid brittle exact string matching unless exact output is required.
+- Avoid source-grep-only tests unless task is about source content.
+- Avoid order dependency between tests.
+- Avoid latency or performance assertions.
+- Avoid randomness unless seeded and tested by properties.
+- Avoid relying on agent-editable wrapper outputs when a shortcut could pass.
+- Include enough anti-cheating checks to prevent hardcoded answers.
+
+### tests/test.sh must
+
+(Supersedes deprecated patterns: (1) networked `pip`/`uvx` installs in `test.sh`; (2) `.whl` files or a `wheels/` directory under `tests/`; (3) a `/tmp/verifier-venv` or `/opt/verifier-venv` created at runtime.)
+
+- Never reach the network: no `pip install`, `curl`, `wget`, `apt-get install`, `uv` web pulls, `uvx` downloads, `npm install` from registry, `npx playwright install`.
+- Run `/opt/verifier-venv/bin/python -m pytest` — the venv is built at image time. No `pip install`, no venv creation at test time.
+- Use only the language runtime + packages already in `environment/Dockerfile`.
+- Always write `0` or `1` to `/logs/verifier/reward.txt`.
+- Write `0` on failure and `1` only when all tests pass.
+- Use the same verifier logic for oracle and agent.
+- Use safe defaults: `TEST_DIR="${TEST_DIR:-/tests}"` when needed.
+- Never use partial rewards.
+- Never exit before writing `/logs/verifier/reward.txt`.
+
+With `allow_internet = false`, verifier-only dependencies are **installed in `environment/Dockerfile`**, pinned, at build time. `tests/` holds only test scripts — no `wheels/`, no `.whl`.
+
+`test.sh` may: copy tests to `/tmp`; write `/logs/verifier/ctrf.json`; write binary reward 0/1; run `python3 -m pytest "$TEST_DIR"`.
+
+## Oracle solution rules
+
+`solution/solve.sh` or `solveN.sh` must:
+
+- Be deterministic and self-contained.
+- Solve exactly what the instruction asks.
+- Demonstrate real steps, not echo hardcoded final answers (unless task is explicitly about valid output production through computation).
+- Avoid downloading packages or web data.
+- Avoid random behavior without fixed seed.
+- Be idempotent when possible.
+- Pass consistently across repeated oracle runs.
+- Not depend on local machine state outside the task.
+
+For milestones, each `solveN.sh` solves only its own milestone and must not pre-solve future milestones unless explicitly required.
+
+## Rubric rules
+
+Rubrics are authored **directly in the Snorkel platform UI**, never as a `rubric.md`/`rubric.txt` file in the task (such a file is ignored by the platform and is a rejection signal). A rubric is a set of binary checks over the agent's **trace** that grade the *process*, not the outcome — do not mirror the deterministic tests.
+
+Emit **one `#Rubric N` block per milestone** (N = the milestone number; a flat task gets a single `#Rubric 1` block). Author by mapping the optimal step sequence: list each key step in `solveN.sh`, give every essential step ≥1 positive check, then add edge-case/safety penalties.
+
+**Trace-evidence is the hard test:** if you can't see it in the trace, you can't grade it. Phrase each check so it depends on visible evidence (surfaced output, printed counts/paths, a diff, a checksum, an exit code). Name the exact path/file/format/pattern/value — vague checks (`Agent reads input file`, `Agent implements core algorithm correctly`) are filler.
+
+Importance tiers: critical ±5 (safety, core correctness), major ±3 (verification, recovery), minor ±1–2 (hygiene, inspect-before-transform). Use negative points for undesirable events but keep the sentence positive in form.
+
+Every rubric line must:
+
+- Start with "Agent" and name a single observable, trace-evidenced behavior.
+- End with comma and a valid score; use only +1, +2, +3, +5, -1, -2, -3, or -5 (never 4).
+- Be one single line, precise and behavior-focused.
+- May credit the agent running tests/verification and **surfacing the result** (output, counts, exit code), e.g. `Agent executes the task tests and prints a pass/fail summary, +3`.
+- Not merely restate the deterministic outcome (`Agent's solution passes`), and not name oracle/NOP/metadata/instruction.md/task.toml as the subject.
+
+Rubric must (per milestone, or per whole flat task):
+
+- Include **at least 5 checks** total, with **≥3 negative** criteria.
+- Keep positive total between 10 and 40 points (the hard cap); **aim for ~10–20**.
+- Give every essential step ≥1 positive check; one behavior → one check (no double-counting).
+- Reward meaningful engineering (root-cause ID, correct computation, edge-case/malformed-input handling, idempotency, verification); penalize hardcoding, deleting/weakening checks, bypassing logic, operating outside `/app`, ignoring malformed inputs, destructive ops, leaking secrets, and claiming success while the trace shows failures.
+
+### Emit the rubric in chat (ready to paste)
+
+Because the rubric is never a file, **output it in the chat** so the user can paste it into the platform UI — when you create or finalize a task, when asked for "the rubric," after any revision that changes required behavior, and after every (re)build of the `tasksubmit/` zip.
+
+- Put the criteria in a fenced block containing **only** the criterion lines (no commentary inside), so it copies cleanly.
+- Milestone tasks: **one block per milestone**, each headed (outside the block) with the milestone name; budgets apply per milestone.
+- After each block, print a one-line self-check, e.g. `Checks = 7 (≥5 ✓) · positives = 14 (target 10–20, cap 10–40 ✓) · negatives = 3 (≥3 ✓) · no 4s ✓`.
+- If a block is out of budget, flag it and fix the criteria — never pad with filler.
+
+## Common rejection issues to prevent
+
+- Tests enforce behavior not stated in instruction.
+- Instruction states behavior tests do not cover.
+- Output schema or path missing from instruction.
+- Instruction gives solution hints or step-by-step guidance.
+- Relative paths in instruction.
+- Environment includes expected output, hints, BUG comments, answer files.
+- Canary strings present anywhere (`CANARY-*`, `BENCHMARK DATA...` line, `# canary GUID:`) — canary is retired in Edition 2.
+- `rubric.md`/`rubric.txt` shipped in the task (rubric goes in the platform UI).
+- `.whl` files or a `wheels/` directory under `tests/` (verifier deps go in the Dockerfile).
+- `workdir` set on a flat (non-milestone) task; or a milestone `[[steps]]` block missing its `name`.
+- Stray files in the task root (`difficulty-check-summary.md`, `.ruff_cache/`).
+- Dockerfile copies tests or solution.
+- App dependencies unpinned.
+- task.toml missing required fields or wrong milestone count.
+- Milestone task uses old root-level layout.
+- Milestone test lacks `TestMilestoneN` class.
+- `solveN.sh` solves future milestones.
+- Missing solveN.sh or solve.sh wrapper.
+- number_of_milestones mismatch with `[[steps]]` blocks.
+- test.sh exits before reward.txt; partial rewards; oracle/agent treated differently.
+- Tests only check format/existence.
+- Rubric format invalid, < 5 checks, < 3 negative criteria, or criteria not trace-evidenced.
+- Task too easy (agent results).
+- Python task marked medium.
+- Minimal codebase for new submission.
+- UI-building or multi-container without approval.
+- Oracle passes locally but fails on platform (path, permissions, deps).
+
+## Default skeleton (new tasks)
+
+- `task.toml` includes `allow_internet = false` (and no `workdir` on flat tasks).
+- `environment/Dockerfile` installs the language runtime + pinned **app** deps, and builds an isolated `/opt/verifier-venv` for the pinned **test-only** deps (not the system Python).
+- `tests/` contains only `test.sh` + `test_*.py` (optional `verifier-tools/`). No `wheels/`, no `.whl`.
+- `tests/test.sh` runs `python3 -m pytest "$TEST_DIR"` directly — no `pip install`, no venv.
+
+## UI task skeleton (avoid new UI tasks unless approved)
+
+- `allow_internet = false`.
+- Install Playwright / verifier npm packages **in the Dockerfile** at build time, pinned (alongside the Node runtime + browser binaries).
+- `test.sh` runs the test command directly — it must not `npm install` from registry or `playwright install` from network.
+- `tests/` holds only test scripts — no vendored tarballs or `wheels/`.

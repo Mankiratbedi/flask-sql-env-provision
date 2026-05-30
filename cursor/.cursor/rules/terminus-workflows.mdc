@@ -1,0 +1,103 @@
+---
+description: Terminus Edition 2 post-creation audit, revision, and final verification workflows
+alwaysApply: true
+---
+
+# Terminus Edition 2 — Review Workflows
+
+Use these workflows when auditing, revising, or verifying tasks. Do not modify files during audit unless the user asks. Do not claim ready unless verified with evidence.
+
+## 1. Post-creation audit prompt
+
+After creating a task, audit it against Terminus rules.
+
+**First:** inspect the real task directory and list actual files found. Do not assume any file exists.
+
+Check:
+
+- Task type: milestone or non-milestone
+- Root structure
+- `task.toml` required fields (including `allow_internet = false`)
+- `environment/Dockerfile` app-dep pins, language runtime present, and **verifier-only deps (pytest, pytest-json-ctrf) installed and pinned** in the image
+- `tests/` holds only test scripts — **no `wheels/` dir, no `.whl` files** (wheels in `tests/` are a blocker)
+- `instruction.md` quality and absolute paths
+- Instruction-to-test alignment
+- `tests/test.sh` reward writing, runs `/opt/verifier-venv/bin/python -m pytest` (venv built at image time — **no `pip install`, no venv at test time**), and no networked installs
+- Pytest docstrings and behavior coverage
+- Oracle solution determinism
+- No tests, solution, expected outputs, ground truth, or hidden hints inside environment
+- No canary strings anywhere; no stray files (`rubric.md`/`rubric.txt`, `difficulty-check-summary.md`, `.ruff_cache/`)
+- Rubric authored in the platform UI (not a file); trace-evidenced; valid scores (±1/2/3/5, never 4); ≥5 checks, ≥3 negative criteria; positives sum 10–40 (aim ~10–20)
+- Codebase_size evidence from meaningful files
+- Whether difficulty is target only or actually verified
+
+For every issue found, report:
+
+- **severity:** High, Medium, or Low
+- **exact file/path**
+- **exact problem**
+- **exact fix needed**
+
+Do not modify files yet. Do not say the task is ready unless every item is verified with actual evidence.
+
+## 2. Revision from reviewer feedback
+
+When fixing from reviewer feedback:
+
+**Rules:**
+
+- First inspect actual task files before editing.
+- Map each reviewer comment to exact file(s) needing changes.
+- Fix only reviewer issues and directly related blockers.
+- Do not rewrite unrelated working parts.
+- Do not add extra edge cases, services, dependencies, or complexity unless required.
+- Keep instruction concise and realistic.
+- Keep tests aligned with instruction.
+- Keep oracle deterministic and scoped.
+- Keep Docker dependencies pinned.
+- Keep milestone structure in `steps/milestone_N/` format if milestone task.
+- Ensure `test.sh` always writes `/logs/verifier/reward.txt` with 0 or 1.
+- Ensure rubric still has valid format and at least 3 negative criteria.
+
+**After editing, output:**
+
+- What reviewer issue was fixed
+- Which files were changed
+- What exact change was made
+- What checks still need to be run
+- Whether task is **verified** or **not verified yet**
+
+Do not claim ready/pass/accepted unless local oracle and verifier checks were actually run.
+
+## 3. Final verify after fixes
+
+Recheck the revised task from scratch. Inspect real files and verify:
+
+- All reviewer feedback was addressed
+- No new instruction-test mismatch was introduced
+- `task.toml` is complete (including `allow_internet = false`)
+- Dockerfile has pinned app dependencies, contains the language runtime, **installs verifier-only deps (pytest, pytest-json-ctrf) pinned**, does not copy tests/solution
+- `tests/` holds only test scripts — no `wheels/`, no `.whl`
+- Tests verify behavior, not only format
+- `test.sh` writes reward.txt on success and failure; runs `/opt/verifier-venv/bin/python -m pytest` (venv built at image time — no `pip install`, no venv at test time); no networked installs
+- Oracle is deterministic and does not hardcode final outputs
+- Environment does not leak solution, tests, ground truth, expected outputs, or hidden hints
+- Rubric format valid with at least 3 negative criteria
+
+**Final report:**
+
+- Ready to submit: yes/no
+- Remaining blockers, if any
+- Commands run and results
+- If commands were not run, say **not verified yet**
+- The rubric as a ready-to-paste block (one per milestone) for the platform UI — see the rubric rules in `terminus-creation-rules.mdc`.
+
+## Generating task ideas (no hallucination)
+
+When asked for task ideas:
+
+- Prioritize non-Python, single-container, small codebase, medium/hard.
+- Avoid UI-building, multi-container, minimal codebase, simple Python, pure CSV/JSON, one-bug tasks.
+- For each idea include: title, primary language, category/subcategories, **target** difficulty, why accepted-likely, why hard for agents, planned codebase structure, what tests verify, anti-cheat strategy, milestone vs non-milestone.
+- Mark difficulty/codebase claims as **target/planned** unless actual files and agent results exist.
+- Do not create the task and claim ready in the same step without inspection and verification.

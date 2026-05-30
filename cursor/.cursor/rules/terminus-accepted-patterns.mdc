@@ -1,0 +1,149 @@
+---
+description: Terminus Edition 2 accepted task patterns, lanes, avoid list, difficulty design, blueprints
+alwaysApply: true
+---
+
+# Terminus Edition 2 — Accepted Task Patterns
+
+## Accepted task patterns
+
+When creating a new Terminus task, prefer realistic engineering work with enough hidden complexity for frontier agents to struggle.
+
+The safest accepted pattern is:
+
+- Single-container task.
+- Non-Python primary language: Go, TypeScript/Node, Java, Rust, Bash, or mixed shell/tooling.
+- `codebase_size = "small"` or `"large"`, never `"minimal"` for new submissions.
+- `difficulty = "medium"` or `"hard"` for non-Python tasks.
+- Python only if the task is genuinely hard.
+- 20+ meaningful environment files for small codebase, not filler.
+- Multiple related bugs or behaviors, not one obvious bug.
+- Tests verify real behavior through CLI, API, DB, or output artifacts.
+- Oracle passes 100%, NOP fails, and real agents do not all pass.
+- Instruction is short and user-like, but output paths and schemas are fully specified.
+- No hidden behavior in tests that instruction does not mention.
+- No leaked answers, expected outputs, or solution hints in environment files.
+
+## Most accepted task lanes
+
+### 1. TypeScript or Node API + SQLite task
+
+- Category: `software-engineering` or `debugging`
+- Subcategories: `api_integration`, `db_interaction`
+- Good behaviors: request validation, pagination, idempotency, transaction rollback, duplicate handling, report generation, malformed input handling.
+
+### 2. Go CLI or service debugging task
+
+- Category: `debugging` or `data-processing`
+- Subcategories: `tool_specific` only if a real tool is central
+- Good behaviors: log replay, checksum repair, binary or JSONL decoding, restart handling, malformed record recovery, deterministic export.
+
+### 3. Rust parser or binary decoder task
+
+- Category: `debugging`
+- Good behaviors: byte offsets, checksum validation, streaming decode, strict CLI output, error handling, deterministic artifact generation.
+
+### 4. Java service, config, or migration task
+
+- Category: `software-engineering`
+- Subcategories: `api_integration` or `db_interaction` if applicable
+- Good behaviors: config precedence, schema migration, validation, retry policy, audit export.
+
+### 5. Tool-specific local pipeline task
+
+- Category: `build-and-dependency-management` or `data-processing`
+- Subcategories: `tool_specific`
+- Good tools: FFmpeg, ImageMagick, Graphviz, jq, SQLite, Make, CMake, Cargo, npm build tools.
+- Good behaviors: repair command pipeline, validate generated artifacts semantically, generate structured metadata, produce deterministic output.
+
+### 6. DB interaction task
+
+- Category: `software-engineering` or `data-processing`
+- Subcategories: `db_interaction`
+- Preferred DB: SQLite for single-container tasks.
+- Good behaviors: migrations, constraints, indexes, backfill, rollback, query correctness, persisted reports.
+- Avoid plain CSV-only tasks unless the logic is genuinely complex.
+
+### 7. Milestone debugging task
+
+- Category: `debugging` or `software-engineering`
+- Use 2–4 milestones. Each milestone must be a prerequisite for the next.
+- Good flow: M1 ingestion/parsing → M2 state/DB consistency → M3 reporting/export.
+
+### 8. Long-context task
+
+- Subcategory: `long_context`
+- Only when the provided document is 50k+ tokens and requires semantic understanding.
+- Avoid long files solvable by grep, simple parsing, or small table lookup.
+
+## Task ideas to avoid
+
+- Simple Python script repair.
+- Python medium task.
+- One failing unit test with one obvious bug.
+- Pure CSV conversion.
+- Basic JSON formatting.
+- "Read files and calculate answer" with no code repair.
+- UI-building task unless explicitly approved.
+- New multi-container task unless explicitly approved.
+- FastAPI-only task unless unusually strong.
+- Tasks where tests reveal the exact expected output.
+- Tasks where the oracle just writes hardcoded output files.
+- Tasks where difficulty comes only from many edge cases in instruction.
+- Tasks where the prompt is long and checklist-like.
+- Tasks that require internet data or external APIs.
+- Latency or performance optimization tasks with timing thresholds.
+- Tasks copied from common TerminalBench patterns with only names changed.
+- Any task where a frontier model can likely solve it in one short edit.
+
+## Difficulty design
+
+Make the task hard because the agent must discover and connect multiple pieces of state, not because the prompt is confusing.
+
+**Good difficulty sources:** multiple interacting bugs; persistent state across runs; DB constraints and rollback; malformed input recovery; duplicate/replayed events; cross-file schema mismatch; deterministic report generation with computed fields; anti-cheat via mutated fixtures; need to inspect docs, source, sample data, and runtime behavior.
+
+**Bad difficulty sources:** vague instruction; too many random edge cases; brittle formatting; performance timing; secret exact strings not in instruction; tests enforcing unstated behavior; requiring a specific implementation instead of behavior.
+
+## Default starter task
+
+If no specific idea is given, create the TypeScript/Node + SQLite reconciliation task:
+
+- Small single-container codebase with 25–40 meaningful files.
+- Broken API service under `/app`.
+- Local SQLite DB under `/app/data`.
+- Agent must fix import validation, idempotent request handling, rollback on invalid batches, duplicate handling, and summary report generation.
+- Output report path: `/app/output/reconciliation-report.json`.
+- Tests should mutate or recreate fixtures so hardcoded output fails.
+- `task.toml`: category `software-engineering` or `debugging`; subcategories `api_integration`, `db_interaction`; difficulty `medium` or `hard`; codebase_size `small`; languages `typescript` or `javascript`, `typescript`; do not list Python unless Python is primary.
+
+## Preferred task blueprints
+
+1. **TypeScript API + SQLite reconciliation** — software-engineering; api_integration, db_interaction; medium/hard; small.
+2. **Go log replay and checksum repair** — debugging; hard; small.
+3. **Rust binary packet decoder** — debugging; hard; small.
+4. **Java config migration service** — software-engineering; medium/hard; small.
+5. **Graphviz or ImageMagick tool pipeline** — build-and-dependency-management or data-processing; tool_specific; medium/hard; small.
+
+## Large Codebase Task Gallery
+
+- Claim/download the task bundle first.
+- Inspect real files before making claims.
+- Do not assume bundled task is automatically ready.
+- Still check task.toml, Dockerfile, tests, oracle, instruction alignment, dependency pins, reward writing, and rubric.
+- Large codebase tasks still require `allow_internet = false` and no runtime internet in verifier.
+
+## Difficulty threshold rule
+
+Evaluate in order: Hard → Medium → Easy. Stop at first match.
+
+**Hard:**
+- Best model accuracy ≤ 20%, OR
+- Best model > 20% AND worst model accuracy ≤ 20%.
+
+**Medium:**
+- Hard does not apply AND worst model accuracy > 20% and ≤ 60%.
+
+**Easy:**
+- Medium does not apply AND worst model accuracy > 60% and ≤ 80%.
+
+If no agent run results exist, use **target difficulty** only, not confirmed.

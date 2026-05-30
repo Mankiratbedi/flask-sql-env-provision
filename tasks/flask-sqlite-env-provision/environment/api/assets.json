@@ -1,0 +1,6 @@
+[
+  {"code": "AST001", "name": "Admin Workstation", "quantity": 10},
+  {"code": "AST002", "name": "Database Server", "quantity": "invalid_quantity"},
+  {"code": "AST003", "name": "Core Router", "quantity": 5},
+  {"code": "AST001", "name": "Duplicate Workstation", "quantity": 1}
+]

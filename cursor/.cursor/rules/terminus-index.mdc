@@ -1,0 +1,21 @@
+---
+description: Terminus Edition 2 rule sources — use split rules and full canonical spec together
+alwaysApply: true
+---
+
+# Terminus Edition 2 — Rule sources
+
+Apply **all** of these together for every Terminus task:
+
+1. **Full canonical spec:** `.cursor/rules/terminus.mdc` (canonical; source also at `cursor/.cursor/rules/terminus.mdc`)
+2. **Focused splits** in `.cursor/rules/`:
+   - `terminus-core.mdc` — anti-hallucination, mandatory self-check, pre-submit checklist
+   - `terminus-accepted-patterns.mdc` — accepted lanes, avoid list, difficulty threshold
+   - `terminus-creation-rules.mdc` — structure, instruction, Docker, tests, oracle, rubric
+   - `terminus-workflows.mdc` — audit, revision, final verify prompts
+   - `terminus-runtime-verifier.mdc` — `allow_internet = false`, no runtime installs in `test.sh`
+   - `terminus.mdc` — **Dockerfile and image best practices** (canonical block in main spec)
+   - `terminus-dockerfile.mdc` — extended Snorkel Dockerfile spec (15 sections, digest/layers/tmux/asciinema)
+   - `terminus-repo-workflow.mdc` — **this repo:** tasks under `tasks/`, flat zip to `tasksubmit/`, new tasks medium/hard only
+
+On conflict, prefer the **stricter** rule. The full spec in `.cursor/rules/terminus.mdc` is the canonical reference; keep split files aligned when editing.
